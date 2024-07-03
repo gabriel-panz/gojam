@@ -10,6 +10,7 @@ templ Home(prof spotify.Profile) {
 			Jam with your friends anywhere over the internet!
 		</p>
 		<section id="profile">
+			@components.DeviceSelect()
 			<h2>Logged in as <span id="displayName">{ prof.DisplayName }</span></h2>
 			<ul>
 				<li>User ID: <span id="id">{ prof.Id }</span></li>
@@ -19,7 +20,7 @@ templ Home(prof spotify.Profile) {
 			</ul>
 		</section>
 		<section id="player">
-			@components.Button()
+			@components.Player("")
 		</section>
 		<section id="playlists">
 			<h2>Playlists:</h2>

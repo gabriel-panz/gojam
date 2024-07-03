@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
@@ -30,12 +31,40 @@ func ListPlaylists(logger *log.Logger, spotify spotify.Service) http.HandlerFunc
 	})
 }
 
-func Play(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
+func ListDevices(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := utils.GetAuthorizedUser(r).Token
-		err := spotify.Play(token)
+		u := utils.GetAuthorizedUser(r)
+
+		ds, err := spotify.GetDevices(u.Token)
 		if err != nil {
 			utils.HandleHttpError(err, logger, w)
 		}
+
+		devices := components.Devices(ds.Devices)
+		devices.Render(r.Context(), w)
+	})
+}
+
+func Play(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		dId := r.URL.Query().Get("deviceId")
+
+		if dId == "" {
+			utils.HandleHttpError(errors.New("no device was selected"), logger, w)
+		}
+
+		token := utils.GetAuthorizedUser(r).Token
+		err := spotify.Play(token, dId)
+		if err != nil {
+			utils.HandleHttpError(err, logger, w)
+		}
+	})
+}
+
+func Player(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		dId := r.URL.Query().Get("deviceId")
+		player := components.Player(dId)
+		player.Render(r.Context(), w)
 	})
 }

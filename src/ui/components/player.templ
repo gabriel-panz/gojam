@@ -1,0 +1,16 @@
+package components
+
+import "fmt"
+
+func hxPut(id string) string {
+	return fmt.Sprintf("/player/play?deviceId=%s", id)
+}
+
+templ Player(deviceId string) {
+    <button
+        id="playButton"
+        hx-put={ hxPut(deviceId) }
+    >
+        Play
+    </button>
+}

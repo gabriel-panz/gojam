@@ -1,0 +1,41 @@
+package components
+
+import "github.com/gabriel-panz/gojam/spotify"
+import "fmt"
+
+templ DeviceSelect() {
+	<div>
+		<label>
+			Select a device:
+		</label>
+		<select
+			id="deviceSelect"
+			hx-get="/user/devices"
+			hx-swap="innerHTML"
+			hx-trigger="load"
+		></select>
+	</div>
+}
+
+func hxGetPlayer(id string) string {
+	return fmt.Sprintf("/player?deviceId=%s", id)
+}
+
+templ Devices(ds []spotify.Device) {
+	<option
+		value=""
+		hx-get={ hxGetPlayer("") }
+		hx-target="#playButton"
+		hx-swap="outerHTML"
+	></option>
+	for _, d := range ds {
+		<option
+			value={ d.ID }
+			hx-get={ hxGetPlayer(d.ID) }
+			hx-target="#playButton"
+			hx-swap="outerHTML"
+		>
+			{ d.Name }
+		</option>
+	}
+}

@@ -94,9 +94,7 @@ type AccessTokenRequest struct {
 type RefreshTokenRequest struct {
 	ClientId     string `url:"client_id"`
 	GrantType    string `url:"grant_type"`
-	Code         string `url:"code"`
 	RefreshToken string `url:"redirect_uri"`
-	CodeVerifier string `url:"code_verifier"`
 }
 
 type PlayRequest struct {

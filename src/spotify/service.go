@@ -116,12 +116,18 @@ func (s Service) GetAccessToken(verifier string, code string) (*Token, error) {
 }
 
 func (s Service) RefreshAccessToken(refresh string) (*Token, error) {
-	body := ""
-	body += "grant_type=refresh_token&"
-	body += "refresh_token=" + refresh + "&"
-	body += "client_id=" + os.Getenv("CLIENT_ID") + "&"
+	body := RefreshTokenRequest{
+		GrantType:    "refresh_token",
+		RefreshToken: refresh,
+		ClientId:     os.Getenv("CLIENT_ID"),
+	}
 
-	sr := strings.NewReader(body)
+	v, err := query.Values(body)
+	if err != nil {
+		return nil, err
+	}
+
+	sr := strings.NewReader(v.Encode())
 
 	req, err := http.NewRequest(http.MethodPost, tokenUrl, sr)
 	if err != nil {
@@ -214,17 +220,8 @@ func (s Service) GetPlaylists(p *types.Pagination, token string) ([]Playlist, er
 	}
 }
 
-func (s Service) Play(token string) error {
-	// for prototype purposes, choose the first available device
-	ds, err := s.GetDevices(token)
-	fmt.Println(ds)
-	if err != nil {
-		return err
-	}
-
-	d := ds.Devices[0]
-
-	req, err := http.NewRequest(http.MethodPut, play+"?device_id="+d.ID, nil)
+func (s Service) Play(token string, deviceId string) error {
+	req, err := http.NewRequest(http.MethodPut, play+"?device_id="+deviceId, nil)
 	if err != nil {
 		return err
 	}
