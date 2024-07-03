@@ -1,0 +1,45 @@
+package components
+
+import (
+	"fmt"
+	"github.com/gabriel-panz/gojam/spotify"
+)
+
+func hxGet(page int) string {
+	return fmt.Sprintf("/user/playlists?page=%d&size=20", page+1)
+}
+
+templ PlaylistList(playlists []spotify.Playlist, page int) {
+		for i, p := range playlists {
+			// for the last item, add the hx-get for infinite scrolling
+			if (i == (len(playlists) - 1)) {
+				<li
+					hx-get={ hxGet(page) }
+					hx-trigger="revealed"
+					hx-swap="afterend"
+				>
+					<details>
+						<summary>{ p.Name }</summary>
+						<p>
+							Description: { p.Description }
+						</p>
+						<p>
+							Tracks: <a href={ templ.URL(p.Tracks.Href) }>{ p.Tracks.Href } </a>
+						</p>
+					</details>
+				</li>
+			} else {
+				<li>
+					<details>
+						<summary>{ p.Name }</summary>
+						<p>
+							Description: { p.Description }
+						</p>
+						<p>
+							Tracks: <a href={ templ.URL(p.Tracks.Href) }>{ p.Tracks.Href } </a>
+						</p>
+					</details>
+				</li>
+			}
+		}
+}

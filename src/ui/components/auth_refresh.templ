@@ -1,0 +1,16 @@
+package components
+
+import "fmt"
+
+func getTrigger(delayS int) string {
+	return fmt.Sprintf("load delay:%ds", delayS)
+}
+
+templ AuthRefresh(delayS int) {
+	<div
+		hx-get="/auth/refresh"
+		hx-target="this"
+		hx-swap="outerHTML"
+		hx-trigger={ getTrigger(delayS) }
+	></div>
+}

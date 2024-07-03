@@ -1,0 +1,30 @@
+package pages
+
+import "github.com/gabriel-panz/gojam/ui/components"
+import "github.com/gabriel-panz/gojam/spotify"
+
+templ Home(prof spotify.Profile) {
+	@components.Base() {
+		<h1>Go Jam!</h1>
+		<p>
+			Jam with your friends anywhere over the internet!
+		</p>
+		<section id="profile">
+			<h2>Logged in as <span id="displayName">{ prof.DisplayName }</span></h2>
+			<ul>
+				<li>User ID: <span id="id">{ prof.Id }</span></li>
+				<li>Email: <span id="email">{ prof.Email }</span></li>
+				<li>Subscription Type: <span id="product">{ prof.Product }</span></li>
+				<li>Spotify URI: <a id="uri" href={ templ.SafeURL(prof.Uri) }>{ prof.Uri }</a></li>
+			</ul>
+		</section>
+		<section id="player">
+			@components.Button()
+		</section>
+		<section id="playlists">
+			<h2>Playlists:</h2>
+			<ul hx-get="/user/playlists?size=20" hx-swap="innerHTML" hx-trigger="load"></ul>
+		</section>
+		@components.AuthRefresh(3600)
+	}
+}
