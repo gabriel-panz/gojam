@@ -1,3 +1,3 @@
 run:
-	@/home/panz/go/bin/templ generate
+	@templ generate
 	@go run .
