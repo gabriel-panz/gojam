@@ -123,7 +123,7 @@ func Home(prof spotify.Profile) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</section><section id=\"playlists\"><h2>Playlists:</h2><ul hx-get=\"/user/playlists?size=20\" hx-swap=\"innerHTML\" hx-trigger=\"load\"></ul></section>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</section><section id=\"playlists\"><h2>Playlists:</h2>(click name to expand)<ul class=\"list\" hx-get=\"/user/playlists?size=20\" hx-swap=\"innerHTML\" hx-trigger=\"load\"></ul></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -137,6 +137,10 @@ func Home(prof spotify.Profile) templ.Component {
 			return templ_7745c5c3_Err
 		})
 		templ_7745c5c3_Err = components.Base().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<style>\n\t\t.list {\n\t\t\tlist-style: none;\n\t\t}\n\n\t\t.list li {\n\t\t\tborder: 1px solid black;\n\t\t\tmargin: 1rem;\n\t\t}\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

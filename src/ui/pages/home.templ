@@ -24,9 +24,19 @@ templ Home(prof spotify.Profile) {
 			@components.Player("", types.NoDevice)
 		</section>
 		<section id="playlists">
-			<h2>Playlists:</h2>
-			<ul hx-get="/user/playlists?size=20" hx-swap="innerHTML" hx-trigger="load"></ul>
+			<h2>Playlists:</h2> (click name to expand)
+			<ul class="list" hx-get="/user/playlists?size=20" hx-swap="innerHTML" hx-trigger="load"></ul>
 		</section>
 		@components.AuthRefresh(3600)
 	}
+	<style>
+		.list {
+			list-style: none;
+		}
+
+		.list li {
+			border: 1px solid black;
+			margin: 1rem;
+		}
+	</style>
 }
