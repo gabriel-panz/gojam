@@ -2,6 +2,7 @@ package components
 
 import "github.com/gabriel-panz/gojam/spotify"
 import "fmt"
+import "github.com/gabriel-panz/gojam/types"
 
 templ DeviceSelect() {
 	<div>
@@ -17,21 +18,21 @@ templ DeviceSelect() {
 	</div>
 }
 
-func hxGetPlayer(id string) string {
-	return fmt.Sprintf("/player?deviceId=%s", id)
+func hxGetPlayer(id string, pState types.PlayerState) string {
+	return fmt.Sprintf("/player?deviceId=%s&state=%d", id, pState)
 }
 
 templ Devices(ds []spotify.Device) {
 	<option
 		value=""
-		hx-get={ hxGetPlayer("") }
+		hx-get={ hxGetPlayer("", types.NoDevice) }
 		hx-target="#playButton"
 		hx-swap="outerHTML"
 	></option>
 	for _, d := range ds {
 		<option
 			value={ d.ID }
-			hx-get={ hxGetPlayer(d.ID) }
+			hx-get={ hxGetPlayer(d.ID, types.PlayState) }
 			hx-target="#playButton"
 			hx-swap="outerHTML"
 		>

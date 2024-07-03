@@ -1,16 +1,40 @@
 package components
 
 import "fmt"
+import "github.com/gabriel-panz/gojam/types"
 
-func hxPut(id string) string {
+func hxPutPlay(id string) string {
 	return fmt.Sprintf("/player/play?deviceId=%s", id)
 }
 
-templ Player(deviceId string) {
-    <button
-        id="playButton"
-        hx-put={ hxPut(deviceId) }
-    >
-        Play
-    </button>
+func hxPutPause(id string) string {
+	return fmt.Sprintf("/player/pause?deviceId=%s", id)
+}
+
+templ Player(deviceId string, pState types.PlayerState) {
+	switch pState {
+		case types.PlayState:
+			<button
+				id="playButton"
+				hx-put={ hxPutPlay(deviceId) }
+				hx-swap="outerHTML"
+			>
+				Play
+			</button>
+		case types.PauseState:
+			<button
+				id="playButton"
+				hx-put={ hxPutPause(deviceId) }
+				hx-swap="outerHTML"
+			>
+				Pause
+			</button>
+		case types.NoDevice:
+			<button
+				id="playButton"
+				disabled
+			>
+				Please select a device
+			</button>
+	}
 }

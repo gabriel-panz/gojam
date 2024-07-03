@@ -2,6 +2,7 @@ package pages
 
 import "github.com/gabriel-panz/gojam/ui/components"
 import "github.com/gabriel-panz/gojam/spotify"
+import "github.com/gabriel-panz/gojam/types"
 
 templ Home(prof spotify.Profile) {
 	@components.Base() {
@@ -20,7 +21,7 @@ templ Home(prof spotify.Profile) {
 			</ul>
 		</section>
 		<section id="player">
-			@components.Player("")
+			@components.Player("", types.NoDevice)
 		</section>
 		<section id="playlists">
 			<h2>Playlists:</h2>

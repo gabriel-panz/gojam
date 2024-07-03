@@ -12,6 +12,7 @@ import "bytes"
 
 import "github.com/gabriel-panz/gojam/spotify"
 import "fmt"
+import "github.com/gabriel-panz/gojam/types"
 
 func DeviceSelect() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -37,8 +38,8 @@ func DeviceSelect() templ.Component {
 	})
 }
 
-func hxGetPlayer(id string) string {
-	return fmt.Sprintf("/player?deviceId=%s", id)
+func hxGetPlayer(id string, pState types.PlayerState) string {
+	return fmt.Sprintf("/player?deviceId=%s&state=%d", id, pState)
 }
 
 func Devices(ds []spotify.Device) templ.Component {
@@ -59,9 +60,9 @@ func Devices(ds []spotify.Device) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hxGetPlayer(""))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hxGetPlayer("", types.NoDevice))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/device_select.templ`, Line: 27, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/device_select.templ`, Line: 28, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -79,7 +80,7 @@ func Devices(ds []spotify.Device) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(d.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/device_select.templ`, Line: 33, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/device_select.templ`, Line: 34, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -90,9 +91,9 @@ func Devices(ds []spotify.Device) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(hxGetPlayer(d.ID))
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(hxGetPlayer(d.ID, types.PlayState))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/device_select.templ`, Line: 34, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/device_select.templ`, Line: 35, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -105,7 +106,7 @@ func Devices(ds []spotify.Device) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(d.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/device_select.templ`, Line: 38, Col: 11}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/device_select.templ`, Line: 39, Col: 11}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

@@ -19,6 +19,7 @@ const (
 	playlists   = ApiUrl + "me/playlists"
 	devices     = ApiUrl + "me/player/devices"
 	play        = ApiUrl + "me/player/play"
+	pause       = ApiUrl + "me/player/pause"
 	tokenUrl    = AccountsUrl + "api/token"
 )
 
@@ -222,6 +223,25 @@ func (s Service) GetPlaylists(p *types.Pagination, token string) ([]Playlist, er
 
 func (s Service) Play(token string, deviceId string) error {
 	req, err := http.NewRequest(http.MethodPut, play+"?device_id="+deviceId, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	resp, err := s.Client.Do(req)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode == 204 {
+		return nil
+	} else {
+		return errors.ErrBadRequest
+	}
+}
+
+func (s Service) Pause(token string, deviceId string) error {
+	req, err := http.NewRequest(http.MethodPut, pause+"?device_id="+deviceId, nil)
 	if err != nil {
 		return err
 	}
