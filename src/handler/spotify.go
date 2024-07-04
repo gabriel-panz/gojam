@@ -49,14 +49,15 @@ func ListDevices(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 
 func Play(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		dId := r.URL.Query().Get("deviceId")
+		dId := r.FormValue("deviceId")
+		pUri := r.FormValue("p")
 
 		if dId == "" {
 			utils.HandleHttpError(errors.New("no device was selected"), logger, w)
 		}
 
 		token := utils.GetAuthorizedUser(r).Token
-		err := spotify.Play(token, dId)
+		err := spotify.Play(token, dId, pUri)
 		if err != nil {
 			utils.HandleHttpError(err, logger, w)
 		}

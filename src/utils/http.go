@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -21,6 +23,16 @@ func DecodeJsonBody[K interface{}](resp *http.Response) (*K, error) {
 	}
 
 	return p, nil
+}
+
+func EncodeJsonBody(k interface{}) (io.Reader, error) {
+	b, err := json.Marshal(k)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes.NewReader(b), nil
 }
 
 func EncodeQueryParameters(k interface{}) (string, error) {

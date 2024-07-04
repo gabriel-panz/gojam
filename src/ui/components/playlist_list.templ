@@ -9,6 +9,10 @@ func hxGet(page int) string {
 	return fmt.Sprintf("/user/playlists?page=%d&size=20", page+1)
 }
 
+func hxPutStartPlaylist(p spotify.Playlist) string {
+	return fmt.Sprintf("/player/play?p=%s", p.URI)
+}
+
 templ PlaylistList(playlists []spotify.Playlist, page int) {
 	for i, p := range playlists {
 		// for the last item, add the hx-get for infinite scrolling
@@ -19,19 +23,40 @@ templ PlaylistList(playlists []spotify.Playlist, page int) {
 				hx-swap="afterend"
 			>
 				<details class="playlistItem">
-					<summary>{ p.Name }</summary>
+					<summary>
+						{ p.Name }
+						<button
+							hx-put={ hxPutStartPlaylist(p) }
+							hx-include="#deviceSelect"
+							hx-target="#playButton"
+							hx-swap="outerHTML"
+						>Play</button>
+					</summary>
 					<p>
 						Description: { p.Description }
 					</p>
 					<p>
-						Tracks: <a href={ templ.URL(p.Tracks.Href) }>{ p.Tracks.Href } </a>
+						Tracks: 
+						<a
+							href={ templ.URL(p.Tracks.Href) }
+						>
+							{ p.Tracks.Href }
+						</a>
 					</p>
 				</details>
 			</li>
 		} else {
 			<li>
 				<details class="playlistItem">
-					<summary>{ p.Name }</summary>
+					<summary>
+						{ p.Name }
+						<button
+							hx-put={ hxPutStartPlaylist(p) }
+							hx-include="#deviceSelect"
+							hx-target="#playButton"
+							hx-swap="outerHTML"
+						>Play</button>
+					</summary>
 					<p>
 						Description: { p.Description }
 					</p>
@@ -50,4 +75,6 @@ templ PlaylistList(playlists []spotify.Playlist, page int) {
 			border-bottom-width: 0.1rem;
 		}
 	</style>
+	<script>
+	</script>
 }

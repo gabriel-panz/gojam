@@ -2,6 +2,7 @@ package spotify
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -221,8 +222,24 @@ func (s Service) GetPlaylists(p *types.Pagination, token string) ([]Playlist, er
 	}
 }
 
-func (s Service) Play(token string, deviceId string) error {
-	req, err := http.NewRequest(http.MethodPut, play+"?device_id="+deviceId, nil)
+func (s Service) Play(token string, deviceId string, playlistUri string) error {
+	url := play + "?device_id=" + deviceId
+	var b io.Reader = nil
+	var err error = nil
+	if playlistUri != "" {
+		body := PlayRequest{}
+		body.ContextURI = playlistUri
+		body.Offset = Offset{
+			Position: 0,
+		}
+
+		b, err = utils.EncodeJsonBody(body)
+		if err != nil {
+			return err
+		}
+	}
+
+	req, err := http.NewRequest(http.MethodPut, url, b)
 	if err != nil {
 		return err
 	}
