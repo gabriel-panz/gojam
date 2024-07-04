@@ -1,0 +1,48 @@
+package components
+
+import (
+	"fmt"
+	"github.com/gabriel-panz/gojam/spotify"
+	"github.com/gabriel-panz/gojam/types"
+)
+
+func hxGetTracksPage(page int) string {
+	return fmt.Sprintf("/user/tracks?page=%d&size=20", page+1)
+}
+
+func hxPutStartTrack(t spotify.Tracks) string {
+	return fmt.Sprintf("/player/play?uri=%s&type=%s", t.URI, types.Track)
+}
+
+templ TrackList(tracks []spotify.Tracks, page int) {
+	for _, p := range tracks {
+		<li>
+			<p>
+				{ p.Name }
+				<button
+					hx-put={ hxPutStartTrack(p) }
+					hx-include="#deviceSelect"
+					hx-target="#playButton"
+					hx-swap="outerHTML"
+				>Play</button>
+			</p>
+		</li>
+	}
+	<li
+		hx-get={ hxGetTracksPage(page) }
+		hx-trigger="click"
+		hx-swap="outerHTML"
+	>
+		Load More
+	</li>
+	<style>
+		.playlistItem>summary {
+			list-style: none;
+			padding: 0.5rem;
+			border: 0 solid black;
+			border-bottom-width: 0.1rem;
+		}
+	</style>
+	<script>
+	</script>
+}

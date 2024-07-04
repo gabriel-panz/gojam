@@ -50,14 +50,19 @@ func ListDevices(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 func Play(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		dId := r.FormValue("deviceId")
-		pUri := r.FormValue("p")
+		uri := r.FormValue("uri")
+		t := r.FormValue("type")
 
 		if dId == "" {
 			utils.HandleHttpError(errors.New("no device was selected"), logger, w)
 		}
 
+		if t == "" {
+			utils.HandleHttpError(errors.New("no type was selected"), logger, w)
+		}
+
 		token := utils.GetAuthorizedUser(r).Token
-		err := spotify.Play(token, dId, pUri)
+		err := spotify.Play(token, dId, uri, types.ShowType(t))
 		if err != nil {
 			utils.HandleHttpError(err, logger, w)
 		}
@@ -133,7 +138,7 @@ func Search(logger *log.Logger, s spotify.Service) http.HandlerFunc {
 			utils.HandleHttpError(err, logger, w)
 		}
 
-		results := components.SearchResults(*res)
+		results := components.SearchResults(*res, p.PageIndex)
 		results.Render(r.Context(), w)
 	})
 }

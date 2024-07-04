@@ -59,6 +59,7 @@ type Tracks struct {
 	Name       string `json:"name"`
 	IsPlayable bool   `json:"is_playable"`
 	Href       string `json:"href"`
+	URI        string `json:"uri"`
 	Total      int    `json:"total"`
 }
 
@@ -102,12 +103,12 @@ type RefreshTokenRequest struct {
 
 type PlayRequest struct {
 	// Optional. Spotify URI of the context to play. Valid contexts are albums, artists & playlists.
-	ContextURI string `json:"context_uri"`
+	ContextURI string `json:"context_uri,omitempty"`
 	// Optional. A JSON array of the Spotify track URIs to play. For example: {"uris": ["spotify:track:4iV5W9uYEdYUVa79Axb7Rh", "spotify:track:1301WleyT98MSxVHPZCA6M"]}
-	Uris []string `json:"uris"`
+	Uris []string `json:"uris,omitempty"`
 	// Optional. Indicates from where in the context playback should start. Only available when context_uri corresponds to an album or playlist object "position" is zero based and can’t be negative.
-	Offset     Offset `json:"offset"`
-	PositionMs int    `json:"position_ms"`
+	Offset     *Offset `json:"offset,omitempty"`
+	PositionMs int     `json:"position_ms,omitempty"`
 }
 
 type Offset struct {

@@ -3,70 +3,43 @@ package components
 import (
 	"fmt"
 	"github.com/gabriel-panz/gojam/spotify"
+	"github.com/gabriel-panz/gojam/types"
 )
 
-func hxGet(page int) string {
+func hxGetPlaylistPage(page int) string {
 	return fmt.Sprintf("/user/playlists?page=%d&size=20", page+1)
 }
 
 func hxPutStartPlaylist(p spotify.Playlist) string {
-	return fmt.Sprintf("/player/play?p=%s", p.URI)
+	return fmt.Sprintf("/player/play?uri=%s&type=%s", p.URI, types.Playlist)
 }
 
 templ PlaylistList(playlists []spotify.Playlist, page int) {
-	for i, p := range playlists {
-		// for the last item, add the hx-get for infinite scrolling
-		if (i == (len(playlists) - 1)) {
-			<li
-				hx-get={ hxGet(page) }
-				hx-trigger="revealed"
-				hx-swap="afterend"
-			>
-				<details class="playlistItem">
-					<summary>
-						{ p.Name }
-						<button
-							hx-put={ hxPutStartPlaylist(p) }
-							hx-include="#deviceSelect"
-							hx-target="#playButton"
-							hx-swap="outerHTML"
-						>Play</button>
-					</summary>
-					<p>
-						Description: { p.Description }
-					</p>
-					<p>
-						Tracks: 
-						<a
-							href={ templ.URL(p.Tracks.Href) }
-						>
-							{ p.Tracks.Href }
-						</a>
-					</p>
-				</details>
-			</li>
-		} else {
-			<li>
-				<details class="playlistItem">
-					<summary>
-						{ p.Name }
-						<button
-							hx-put={ hxPutStartPlaylist(p) }
-							hx-include="#deviceSelect"
-							hx-target="#playButton"
-							hx-swap="outerHTML"
-						>Play</button>
-					</summary>
-					<p>
-						Description: { p.Description }
-					</p>
-					<p>
-						Tracks: <a href={ templ.URL(p.Tracks.Href) }>{ p.Tracks.Href } </a>
-					</p>
-				</details>
-			</li>
-		}
+	for _, p := range playlists {
+		<li>
+			<details class="playlistItem">
+				<summary>
+					{ p.Name }
+					<button
+						hx-put={ hxPutStartPlaylist(p) }
+						hx-include="#deviceSelect"
+						hx-target="#playButton"
+						hx-swap="outerHTML"
+					>Play</button>
+				</summary>
+				<p>
+					Description: { p.Description }
+				</p>
+			</details>
+		</li>
 	}
+	<li
+		hx-get={ hxGetPlaylistPage(page) }
+		hx-trigger="click"
+		hx-swap="outerHTML"
+	>
+		Load More
+	</li>
 	<style>
 		.playlistItem>summary {
 			list-style: none;

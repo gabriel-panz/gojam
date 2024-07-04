@@ -16,11 +16,13 @@ templ Search() {
 	<section id="searchResults"></section>
 }
 
-templ SearchResults(r spotify.SearchResponse) {
+templ SearchResults(r spotify.SearchResponse, page int) {
 	<ul>
 		<h2>Tracks: </h2>
-		for _, t := range r.Tracks.Items {
-			<li>{ t.Name }</li>
-		}
+		@TrackList(r.Tracks.Items, page)
+	</ul>
+	<ul>
+		<h2>Playlists: </h2>
+		@PlaylistList(r.Playlists.Items, page)
 	</ul>
 }

@@ -16,15 +16,15 @@ import (
 	"github.com/gabriel-panz/gojam/types"
 )
 
-func hxGetPlaylistPage(page int) string {
-	return fmt.Sprintf("/user/playlists?page=%d&size=20", page+1)
+func hxGetTracksPage(page int) string {
+	return fmt.Sprintf("/user/tracks?page=%d&size=20", page+1)
 }
 
-func hxPutStartPlaylist(p spotify.Playlist) string {
-	return fmt.Sprintf("/player/play?uri=%s&type=%s", p.URI, types.Playlist)
+func hxPutStartTrack(t spotify.Tracks) string {
+	return fmt.Sprintf("/player/play?uri=%s&type=%s", t.URI, types.Track)
 }
 
-func PlaylistList(playlists []spotify.Playlist, page int) templ.Component {
+func TrackList(tracks []spotify.Tracks, page int) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -37,15 +37,15 @@ func PlaylistList(playlists []spotify.Playlist, page int) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		for _, p := range playlists {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li><details class=\"playlistItem\"><summary>")
+		for _, p := range tracks {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li><p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(p.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/playlist_list.templ`, Line: 22, Col: 13}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/track_list.templ`, Line: 21, Col: 12}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -56,28 +56,15 @@ func PlaylistList(playlists []spotify.Playlist, page int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hxPutStartPlaylist(p))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hxPutStartTrack(p))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/playlist_list.templ`, Line: 24, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/track_list.templ`, Line: 23, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-include=\"#deviceSelect\" hx-target=\"#playButton\" hx-swap=\"outerHTML\">Play</button></summary><p>Description: ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(p.Description)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/playlist_list.templ`, Line: 31, Col: 33}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></details></li>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-include=\"#deviceSelect\" hx-target=\"#playButton\" hx-swap=\"outerHTML\">Play</button></p></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -86,12 +73,12 @@ func PlaylistList(playlists []spotify.Playlist, page int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(hxGetPlaylistPage(page))
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(hxGetTracksPage(page))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/playlist_list.templ`, Line: 37, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/track_list.templ`, Line: 32, Col: 32}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

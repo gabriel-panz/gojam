@@ -7,3 +7,10 @@ const (
 	PauseState
 	NoDevice
 )
+
+type ShowType string
+
+const (
+	Playlist ShowType = "p"
+	Track    ShowType = "t"
+)
