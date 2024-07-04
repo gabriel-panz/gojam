@@ -55,8 +55,11 @@ type Owner struct {
 }
 
 type Tracks struct {
-	Href  string `json:"href"`
-	Total int    `json:"total"`
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	IsPlayable bool   `json:"is_playable"`
+	Href       string `json:"href"`
+	Total      int    `json:"total"`
 }
 
 type DeviceResponse struct {

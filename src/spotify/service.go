@@ -21,6 +21,7 @@ const (
 	devices     = ApiUrl + "me/player/devices"
 	play        = ApiUrl + "me/player/play"
 	pause       = ApiUrl + "me/player/pause"
+	search      = ApiUrl + "search"
 	tokenUrl    = AccountsUrl + "api/token"
 )
 
@@ -295,4 +296,42 @@ func (s Service) GetDevices(token string) (*DeviceResponse, error) {
 	}
 
 	return ds, nil
+}
+
+type SearchParams struct {
+	Query  string   `url:"q"`
+	Type   []string `url:"type" del:","`
+	Limit  int      `url:"limit"`
+	Offset int      `url:"offset"`
+}
+
+type SearchResponse struct {
+	Tracks    OffsetResponse[Tracks]   `json:"tracks"`
+	Playlists OffsetResponse[Playlist] `json:"playlists"`
+}
+
+func (s Service) Search(token string, p SearchParams) (*SearchResponse, error) {
+	v, err := utils.EncodeQueryParameters(p)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, search+"?"+v, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Authorization", "Bearer "+token)
+
+	resp, err := s.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	r, err := utils.DecodeJsonBody[SearchResponse](resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return r, nil
 }

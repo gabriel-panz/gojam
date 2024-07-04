@@ -104,3 +104,36 @@ func Player(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 		player.Render(r.Context(), w)
 	})
 }
+
+func Search(logger *log.Logger, s spotify.Service) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query().Get("q")
+		p, err := utils.GetPagination(r)
+		if err != nil {
+			utils.HandleHttpError(err, logger, w)
+		}
+
+		if q == "" {
+			utils.HandleHttpError(errors.New("please inform a search query"), logger, w)
+		}
+
+		token := utils.GetAuthorizedUser(r).Token
+
+		params := spotify.SearchParams{
+			Query: q,
+			Type: []string{
+				"playlist", "track",
+			},
+			Limit:  p.PageSize,
+			Offset: p.PageIndex,
+		}
+
+		res, err := s.Search(token, params)
+		if err != nil {
+			utils.HandleHttpError(err, logger, w)
+		}
+
+		results := components.SearchResults(*res)
+		results.Render(r.Context(), w)
+	})
+}

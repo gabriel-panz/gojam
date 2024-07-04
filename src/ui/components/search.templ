@@ -1,8 +1,26 @@
 package components
 
+import "github.com/gabriel-panz/gojam/spotify"
+
 templ Search() {
-    <div>
-        <label> Search for a song or playlist: </label>
-        <input type="search" >
-    </div>
+	<form
+		hx-get="/search?page=0&size=10"
+		hx-target="#searchResults"
+		hx-swap="innerHTML"
+		hx-trigger="keyup delay:0.4s from:#searchbar"
+	>
+		<label>Search for a song or playlist: </label>
+		<input id="searchbar" name="q" type="search"/>
+		<input type="submit"/>
+	</form>
+	<section id="searchResults"></section>
+}
+
+templ SearchResults(r spotify.SearchResponse) {
+	<ul>
+		<h2>Tracks: </h2>
+		for _, t := range r.Tracks.Items {
+			<li>{ t.Name }</li>
+		}
+	</ul>
 }
