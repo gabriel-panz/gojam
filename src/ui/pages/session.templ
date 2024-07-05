@@ -1,0 +1,10 @@
+package pages
+
+import "github.com/gabriel-panz/gojam/ui/components"
+
+templ Session() {
+    @components.Base() {
+        
+    }
+    @components.AuthRefresh(3600)
+}

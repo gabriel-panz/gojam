@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	b64 "encoding/base64"
+	"encoding/hex"
 	"strings"
 )
 
@@ -19,6 +20,14 @@ func generateRandomByteSlice(length int) ([]byte, error) {
 		return nil, err
 	}
 	return b, nil
+}
+
+func GenerateRandomId() (string, error) {
+	bytes := make([]byte, 16)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }
 
 func GenerateCodeVerifier(length int) (string, error) {

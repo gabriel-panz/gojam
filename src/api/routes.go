@@ -6,6 +6,7 @@ import (
 
 	h "github.com/gabriel-panz/gojam/handler"
 	m "github.com/gabriel-panz/gojam/middleware"
+	"github.com/gabriel-panz/gojam/session"
 	"github.com/gabriel-panz/gojam/spotify"
 )
 
@@ -13,6 +14,7 @@ func addRoutes(
 	mux *http.ServeMux,
 	homeHandler h.HomeHandler,
 	spotifyService spotify.Service,
+	sessionService session.SessionService,
 ) {
 	logger := log.Default()
 
@@ -33,4 +35,9 @@ func addRoutes(
 
 	// Search
 	mux.HandleFunc("GET /search", m.Authorize(logger, h.Search(logger, spotifyService)))
+
+	// Session
+	mux.HandleFunc("POST /session/create", m.Authorize(logger, h.CreateSession(logger, sessionService)))
+	mux.HandleFunc("POST /session/join/{session_id}", m.Authorize(logger, h.JoinSession(logger, sessionService)))
+	mux.HandleFunc("POST /session/leave", m.Authorize(logger, h.LeaveSession(logger, sessionService)))
 }

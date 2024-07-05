@@ -5,14 +5,20 @@ import (
 	"net/http"
 
 	"github.com/gabriel-panz/gojam/handler"
+	"github.com/gabriel-panz/gojam/session"
 	"github.com/gabriel-panz/gojam/spotify"
+	"github.com/patrickmn/go-cache"
 )
 
-func NewServer(addr string, clientId string) *http.Server {
+func NewServer(addr string, clientId string, c *cache.Cache) *http.Server {
 	mux := http.NewServeMux()
 
 	spotifyService := spotify.Service{
 		Client: &http.Client{},
+	}
+
+	sessionService := session.SessionService{
+		Cache: c,
 	}
 
 	homeHandler := handler.HomeHandler{
@@ -22,7 +28,7 @@ func NewServer(addr string, clientId string) *http.Server {
 		},
 	}
 
-	addRoutes(mux, homeHandler, spotifyService)
+	addRoutes(mux, homeHandler, spotifyService, sessionService)
 
 	httpServer := &http.Server{
 		Addr:    addr,
