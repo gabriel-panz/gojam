@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	gojamErrors "github.com/gabriel-panz/gojam/errors"
+	"github.com/gabriel-panz/gojam/session"
 	"github.com/gabriel-panz/gojam/spotify"
 	"github.com/gabriel-panz/gojam/types"
 	"github.com/gabriel-panz/gojam/ui/components"
@@ -42,12 +44,18 @@ func ListDevices(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 			utils.HandleHttpError(err, logger, w)
 		}
 
-		devices := components.Devices(ds.Devices)
+		sId := r.FormValue("session_id")
+		if sId == "" {
+			utils.HandleHttpError(gojamErrors.ErrNotFound, logger, w)
+			return
+		}
+
+		devices := components.Devices(ds.Devices, sId)
 		devices.Render(r.Context(), w)
 	})
 }
 
-func Play(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
+func Play(logger *log.Logger, spotify spotify.Service, sess session.SessionService) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		dId := r.FormValue("deviceId")
 		uri := r.FormValue("uri")
@@ -55,19 +63,50 @@ func Play(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 
 		if dId == "" {
 			utils.HandleHttpError(errors.New("no device was selected"), logger, w)
+			return
 		}
 
-		if t == "" {
-			utils.HandleHttpError(errors.New("no type was selected"), logger, w)
+		if uri != "" {
+			if t == "" {
+				utils.HandleHttpError(errors.New("no type was selected"), logger, w)
+				return
+			}
 		}
 
 		token := utils.GetAuthorizedUser(r).Token
-		err := spotify.Play(token, dId, uri, types.ShowType(t))
-		if err != nil {
-			utils.HandleHttpError(err, logger, w)
+
+		sId := r.FormValue("session_id")
+		if sId == "" {
+			utils.HandleHttpError(gojamErrors.ErrNotFound, logger, w)
+			return
 		}
 
-		player := components.Player(dId, types.PauseState)
+		s, err := sess.GetSession(sId)
+		if err != nil {
+			utils.HandleHttpError(err, logger, w)
+			return
+		}
+		if token != s.DjToken {
+			return
+		}
+
+		// do this for every client in session
+		for t, ws := range s.Conns {
+			m := session.SessionMessage{
+				DeviceID: dId,
+				Uri:      uri,
+				Type:     types.ShowType(t),
+			}
+
+			err := spotify.Play(token, dId, uri, types.ShowType(t))
+			if err != nil {
+				utils.HandleHttpError(err, logger, w)
+			}
+			go session.Broadcast(m, ws)
+		}
+
+		// broadcast this
+		player := components.Player(dId, types.PauseState, sId)
 		player.Render(r.Context(), w)
 	})
 }
@@ -86,7 +125,13 @@ func Pause(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 			utils.HandleHttpError(err, logger, w)
 		}
 
-		player := components.Player(dId, types.PlayState)
+		sId := r.FormValue("session_id")
+		if sId == "" {
+			utils.HandleHttpError(gojamErrors.ErrNotFound, logger, w)
+			return
+		}
+
+		player := components.Player(dId, types.PlayState, sId)
 		player.Render(r.Context(), w)
 	})
 }
@@ -105,7 +150,13 @@ func Player(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 			utils.HandleHttpError(errors.New("player state must be integer"), logger, w)
 		}
 
-		player := components.Player(dId, types.PlayerState(pStateInt))
+		sId := r.FormValue("session_id")
+		if sId == "" {
+			utils.HandleHttpError(gojamErrors.ErrNotFound, logger, w)
+			return
+		}
+
+		player := components.Player(dId, types.PlayerState(pStateInt), sId)
 		player.Render(r.Context(), w)
 	})
 }

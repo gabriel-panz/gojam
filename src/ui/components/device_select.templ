@@ -4,38 +4,41 @@ import "github.com/gabriel-panz/gojam/spotify"
 import "fmt"
 import "github.com/gabriel-panz/gojam/types"
 
-templ DeviceSelect() {
-	<div>
+func hxGetListDevices(sId string) string {
+	return fmt.Sprintf("/user/devices?session_id=%s", sId)
+}
+
+templ DeviceSelect(sessionId string) {
+	<div
+		hx-get={ hxGetListDevices(sessionId) }
+		hx-swap="innerHTML"
+		hx-trigger="load"
+		hx-target="#deviceSelect"
+	>
 		<label>
 			Select a device:
 		</label>
 		<select
 			id="deviceSelect"
 			name="deviceId"
-			hx-get="/user/devices"
-			hx-swap="innerHTML"
-			hx-trigger="load"
+			hx-get={ hxGetPlayer(types.PlayState, sessionId) }
+			hx-target="#playButton"
+			hx-swap="outerHTML"
 		></select>
 	</div>
 }
 
-func hxGetPlayer(id string, pState types.PlayerState) string {
-	return fmt.Sprintf("/player?deviceId=%s&state=%d", id, pState)
+func hxGetPlayer(pState types.PlayerState, sId string) string {
+	return fmt.Sprintf("/player?state=%d&session_id=%s", pState, sId)
 }
 
-templ Devices(ds []spotify.Device) {
+templ Devices(ds []spotify.Device, sessionId string) {
 	<option
-		value=""
-		hx-get={ hxGetPlayer("", types.NoDevice) }
-		hx-target="#playButton"
-		hx-swap="outerHTML"
+		value=""		
 	></option>
 	for _, d := range ds {
 		<option
 			value={ d.ID }
-			hx-get={ hxGetPlayer(d.ID, types.PlayState) }
-			hx-target="#playButton"
-			hx-swap="outerHTML"
 		>
 			{ d.Name }
 		</option>

@@ -1,10 +1,43 @@
 package pages
 
 import "github.com/gabriel-panz/gojam/ui/components"
+import "github.com/gabriel-panz/gojam/types"
+import "github.com/gabriel-panz/gojam/session"
+import "fmt"
 
-templ Session() {
-    @components.Base() {
-        
-    }
-    @components.AuthRefresh(3600)
+func getHxSession(id string) string {
+	return fmt.Sprintf("/ws/%s", id)
+}
+
+templ Session(ses *session.Session) {
+	@components.Base() {
+		<header>
+			<h1>Go Jam!</h1>
+			@components.DeviceSelect(ses.ID)
+			@components.Search()
+			<button
+				hx-put="/session/leave"
+				hx-target="#session"
+				hx-swap="outerHTML"
+			>
+				Leave Session
+			</button>
+		</header>
+		<section id="session" hx-ext="ws" ws-connect={ getHxSession(ses.ID) }>
+			<section id="player">
+				@components.Player("", types.NoDevice, ses.ID)
+			</section>
+			<section id="playlists">
+				<h2>My Playlists:</h2> (click name to expand)
+				<ul
+					class="list"
+					hx-get="/user/playlists?size=20"
+					hx-swap="innerHTML"
+					hx-trigger="load"
+				></ul>
+			</section>
+		</section>
+		<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
+		@components.AuthRefresh(3600)
+	}
 }

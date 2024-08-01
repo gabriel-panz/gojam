@@ -1,0 +1,15 @@
+package components
+
+templ SessionCreate() {
+	<section id="createSession">
+		<form>
+			<button
+				hx-post="/session/"
+				hx-trigger="click"
+				hx-swap="none"
+			>
+				Create Session
+			</button>
+		</form>
+	</section>
+}

@@ -3,20 +3,20 @@ package components
 import "fmt"
 import "github.com/gabriel-panz/gojam/types"
 
-func hxPutPlay(id string) string {
-	return fmt.Sprintf("/player/play?deviceId=%s", id)
+func hxPutPlay(id string, sId string) string {
+	return fmt.Sprintf("/player/play?deviceId=%s&session_id=%s", id, sId)
 }
 
-func hxPutPause(id string) string {
-	return fmt.Sprintf("/player/pause?deviceId=%s", id)
+func hxPutPause(id string, sId string) string {
+	return fmt.Sprintf("/player/pause?deviceId=%s&session_id=%s", id, sId)
 }
 
-templ Player(deviceId string, pState types.PlayerState) {
+templ Player(deviceId string, pState types.PlayerState, sessionId string) {
 	switch pState {
 		case types.PlayState:
 			<button
 				id="playButton"
-				hx-put={ hxPutPlay(deviceId) }
+				hx-put={ hxPutPlay(deviceId, sessionId) }
 				hx-swap="outerHTML"
 			>
 				Play
@@ -24,7 +24,7 @@ templ Player(deviceId string, pState types.PlayerState) {
 		case types.PauseState:
 			<button
 				id="playButton"
-				hx-put={ hxPutPause(deviceId) }
+				hx-put={ hxPutPause(deviceId, sessionId) }
 				hx-swap="outerHTML"
 			>
 				Pause

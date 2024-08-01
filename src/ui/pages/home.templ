@@ -1,26 +1,13 @@
 package pages
 
 import "github.com/gabriel-panz/gojam/ui/components"
-import "github.com/gabriel-panz/gojam/spotify"
-import "github.com/gabriel-panz/gojam/types"
 
-templ Home(prof spotify.Profile) {
+templ Home() {
 	@components.Base() {
-		<header>
+		<nav>
 			<h1>Go Jam!</h1>
-			@components.Search()
-		</header>
-		<section id="profile">
-			<h2>Logged in as <span id="displayName">{ prof.DisplayName }</span></h2>
-			@components.DeviceSelect()
-		</section>
-		<section id="player">
-			@components.Player("", types.NoDevice)
-		</section>
-		<section id="playlists">
-			<h2>Playlists:</h2> (click name to expand)
-			<ul class="list" hx-get="/user/playlists?size=20" hx-swap="innerHTML" hx-trigger="load"></ul>
-		</section>
+		</nav>
+		@components.SessionCreate()
 		@components.AuthRefresh(3600)
 	}
 	<style>

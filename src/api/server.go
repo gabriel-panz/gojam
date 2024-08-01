@@ -7,6 +7,7 @@ import (
 	"github.com/gabriel-panz/gojam/handler"
 	"github.com/gabriel-panz/gojam/session"
 	"github.com/gabriel-panz/gojam/spotify"
+	"github.com/gorilla/websocket"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -28,7 +29,12 @@ func NewServer(addr string, clientId string, c *cache.Cache) *http.Server {
 		},
 	}
 
-	addRoutes(mux, homeHandler, spotifyService, sessionService)
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+
+	addRoutes(mux, homeHandler, spotifyService, sessionService, upgrader)
 
 	httpServer := &http.Server{
 		Addr:    addr,

@@ -88,7 +88,7 @@ func (h HomeHandler) AuthCallback(w http.ResponseWriter, r *http.Request) {
 func (h HomeHandler) GetHomePage(w http.ResponseWriter, r *http.Request) {
 	token := utils.GetAuthorizedUser(r).Token
 
-	prof, err := h.Spotify.GetProfileData(token)
+	_, err := h.Spotify.GetProfileData(token)
 
 	if err != nil {
 		switch err {
@@ -114,7 +114,7 @@ func (h HomeHandler) GetHomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	home := pages.Home(*prof)
+	home := pages.Home()
 	home.Render(r.Context(), w)
 }
 

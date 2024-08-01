@@ -13,15 +13,15 @@ import "bytes"
 import "fmt"
 import "github.com/gabriel-panz/gojam/types"
 
-func hxPutPlay(id string) string {
-	return fmt.Sprintf("/player/play?deviceId=%s", id)
+func hxPutPlay(id string, sId string) string {
+	return fmt.Sprintf("/player/play?deviceId=%s&session_id=%s", id, sId)
 }
 
-func hxPutPause(id string) string {
-	return fmt.Sprintf("/player/pause?deviceId=%s", id)
+func hxPutPause(id string, sId string) string {
+	return fmt.Sprintf("/player/pause?deviceId=%s&session_id=%s", id, sId)
 }
 
-func Player(deviceId string, pState types.PlayerState) templ.Component {
+func Player(deviceId string, pState types.PlayerState, sessionId string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -41,9 +41,9 @@ func Player(deviceId string, pState types.PlayerState) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(hxPutPlay(deviceId))
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(hxPutPlay(deviceId, sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/player.templ`, Line: 19, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/player.templ`, Line: 19, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -59,9 +59,9 @@ func Player(deviceId string, pState types.PlayerState) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hxPutPause(deviceId))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hxPutPause(deviceId, sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/player.templ`, Line: 27, Col: 33}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/player.templ`, Line: 27, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {

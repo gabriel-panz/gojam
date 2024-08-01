@@ -10,6 +10,16 @@ type SessionService struct {
 	Cache *cache.Cache
 }
 
+func (s SessionService) GetSession(sId string) (*Session, error) {
+	v, found := s.Cache.Get(sId)
+
+	if !found {
+		return nil, errors.ErrNotFound
+	}
+
+	return v.(*Session), nil
+}
+
 func (s SessionService) CreateSession(creatorToken string) (*Session, error) {
 	sId, err := utils.GenerateRandomId()
 	if err != nil {
@@ -21,28 +31,10 @@ func (s SessionService) CreateSession(creatorToken string) (*Session, error) {
 		return s.CreateSession(creatorToken)
 	}
 
-	ses := Session{
-		ID:         sId,
-		UserTokens: []string{creatorToken},
-		DjToken:    creatorToken,
-	}
+	ses := NewSession(sId, creatorToken)
 
 	s.Cache.Add(sId, ses, cache.DefaultExpiration)
-	return &ses, nil
-}
-
-func (s SessionService) JoinSession(sId string, token string) error {
-	v, found := s.Cache.Get(sId)
-	if !found {
-		return errors.ErrNotFound
-	}
-	ses := v.(*Session)
-	if len(ses.UserTokens) >= 10 {
-		return errors.ErrSessionFull
-	}
-
-	ses.UserTokens = append(ses.UserTokens, token)
-	return nil
+	return ses, nil
 }
 
 func (s SessionService) LeaveSession(sId string, token string) error {
@@ -51,26 +43,10 @@ func (s SessionService) LeaveSession(sId string, token string) error {
 		return errors.ErrNotFound
 	}
 	ses := v.(*Session)
-	var rIndex int
-	for i, t := range ses.UserTokens {
-		if t == token {
-			rIndex = i
-		}
-	}
 
-	if ses.DjToken == token {
-		ses.DjToken = ses.UserTokens[0]
-	}
+	delete(ses.Conns, token)
 
-	if len(ses.UserTokens) == 1 {
-		return s.DeleteSession(sId, token)
-	}
-
-	ses.UserTokens = append(ses.UserTokens[:rIndex], ses.UserTokens[rIndex+1:]...)
-
-	s.Cache.Replace(sId, ses, cache.DefaultExpiration)
-
-	return nil
+	return s.Cache.Replace(sId, ses, cache.DefaultExpiration)
 }
 
 func (s SessionService) DeleteSession(sId string, token string) error {

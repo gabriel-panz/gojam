@@ -23,7 +23,7 @@ func generateRandomByteSlice(length int) ([]byte, error) {
 }
 
 func GenerateRandomId() (string, error) {
-	bytes := make([]byte, 16)
+	bytes := make([]byte, 6)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
 	}

@@ -11,6 +11,7 @@ const (
 type ShowType string
 
 const (
+	None     ShowType = ""
 	Playlist ShowType = "p"
 	Track    ShowType = "t"
 )

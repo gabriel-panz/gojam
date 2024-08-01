@@ -1,34 +1,20 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gabriel-panz/gojam/session"
+	"github.com/gabriel-panz/gojam/ui/components"
+	"github.com/gabriel-panz/gojam/ui/pages"
 	"github.com/gabriel-panz/gojam/utils"
 )
 
-func CreateSession(logger *log.Logger, service session.SessionService) http.HandlerFunc {
+func Session(logger *log.Logger, service session.SessionService) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a := utils.GetAuthorizedUser(r)
-		ses, err := service.CreateSession(a.Token)
-		if err != nil {
-			utils.HandleHttpError(err, logger, w)
-		}
-
-		http.SetCookie(w, &http.Cookie{
-			Name:  "session_id",
-			Value: ses.ID,
-		})
-	})
-}
-
-func JoinSession(logger *log.Logger, service session.SessionService) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a := utils.GetAuthorizedUser(r)
 		sId := r.PathValue("session_id")
-		err := service.JoinSession(sId, a.Token)
-
+		ses, err := service.GetSession(sId)
 		if err != nil {
 			utils.HandleHttpError(err, logger, w)
 		}
@@ -37,6 +23,29 @@ func JoinSession(logger *log.Logger, service session.SessionService) http.Handle
 			Name:  "session_id",
 			Value: sId,
 		})
+
+		sPage := pages.Session(ses)
+		sPage.Render(r.Context(), w)
+	})
+}
+
+// Creates and caches an empty session
+func CreateSession(logger *log.Logger, service session.SessionService) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a := utils.GetAuthorizedUser(r)
+		ses, err := service.CreateSession(a.Token)
+		if err != nil {
+			utils.HandleHttpError(err, logger, w)
+		}
+
+		path := fmt.Sprintf("/session/%s", ses.ID)
+
+		http.SetCookie(w, &http.Cookie{
+			Name:  "session_id",
+			Value: ses.ID,
+		})
+
+		w.Header().Add("HX-Redirect", path)
 	})
 }
 
@@ -59,6 +68,9 @@ func LeaveSession(logger *log.Logger, service session.SessionService) http.Handl
 			Value:  "",
 			MaxAge: 0,
 		})
+
+		sesCreate := components.SessionCreate()
+		sesCreate.Render(r.Context(), w)
 	})
 }
 
