@@ -25,6 +25,14 @@ templ DeviceSelect(sessionId string) {
 			hx-target="#playButton"
 			hx-swap="outerHTML"
 		></select>
+		<button
+			hx-get={ hxGetListDevices(sessionId) }
+			hx-swap="innerHTML"
+			hx-trigger="click"
+			hx-target="#deviceSelect"
+		>
+			Reload
+		</button>
 	</div>
 }
 
@@ -34,7 +42,7 @@ func hxGetPlayer(pState types.PlayerState, sId string) string {
 
 templ Devices(ds []spotify.Device, sessionId string) {
 	<option
-		value=""		
+		value=""
 	></option>
 	for _, d := range ds {
 		<option
