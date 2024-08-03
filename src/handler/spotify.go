@@ -30,7 +30,13 @@ func ListPlaylists(logger *log.Logger, spotify spotify.Service) http.HandlerFunc
 			return
 		}
 
-		ul := components.PlaylistList(ps, p.PageIndex)
+		sId := r.FormValue("session_id")
+		if sId == "" {
+			utils.HandleHttpError(gojamErrors.ErrNotFound, logger, w)
+			return
+		}
+
+		ul := components.PlaylistList(ps, p.PageIndex, sId)
 		ul.Render(r.Context(), w)
 	})
 }
@@ -91,18 +97,19 @@ func Play(logger *log.Logger, spotify spotify.Service, sess session.SessionServi
 		}
 
 		// do this for every client in session
-		for t, ws := range s.Conns {
+		for cToken, client := range s.Conns {
 			m := session.SessionMessage{
-				DeviceID: dId,
+				DeviceID: client.DeviceId,
 				Uri:      uri,
 				Type:     types.ShowType(t),
 			}
 
-			err := spotify.Play(token, dId, uri, types.ShowType(t))
+			err := spotify.Play(cToken, client.DeviceId, uri, types.ShowType(t))
 			if err != nil {
 				utils.HandleHttpError(err, logger, w)
 			}
-			go session.Broadcast(m, ws)
+
+			go session.Broadcast(m, client.Conn)
 		}
 
 		// broadcast this
@@ -136,7 +143,7 @@ func Pause(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 	})
 }
 
-func Player(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
+func Player(logger *log.Logger, spotify spotify.Service, sesService session.SessionService) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		dId := r.URL.Query().Get("deviceId")
 		pState := r.URL.Query().Get("state")
@@ -155,6 +162,16 @@ func Player(logger *log.Logger, spotify spotify.Service) http.HandlerFunc {
 			utils.HandleHttpError(gojamErrors.ErrNotFound, logger, w)
 			return
 		}
+
+		s, err := sesService.GetSession(sId)
+		if err != nil {
+			utils.HandleHttpError(gojamErrors.ErrNotFound, logger, w)
+			return
+		}
+
+		ses := s.Conns[utils.GetAuthorizedUser(r).Token]
+
+		ses.DeviceId = dId
 
 		player := components.Player(dId, types.PlayerState(pStateInt), sId)
 		player.Render(r.Context(), w)
@@ -189,7 +206,13 @@ func Search(logger *log.Logger, s spotify.Service) http.HandlerFunc {
 			utils.HandleHttpError(err, logger, w)
 		}
 
-		results := components.SearchResults(*res, p.PageIndex)
+		sId := r.FormValue("session_id")
+		if sId == "" {
+			utils.HandleHttpError(gojamErrors.ErrNotFound, logger, w)
+			return
+		}
+
+		results := components.SearchResults(*res, p.PageIndex, sId)
 		results.Render(r.Context(), w)
 	})
 }

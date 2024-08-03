@@ -10,18 +10,18 @@ func hxGetPlaylistPage(page int) string {
 	return fmt.Sprintf("/user/playlists?page=%d&size=20", page+1)
 }
 
-func hxPutStartPlaylist(p spotify.Playlist) string {
-	return fmt.Sprintf("/player/play?uri=%s&type=%s", p.URI, types.Playlist)
+func hxPutStartPlaylist(p spotify.Playlist, sessionId string) string {
+	return fmt.Sprintf("/player/play?uri=%s&type=%s&session_id=%s", p.URI, types.Playlist, sessionId)
 }
 
-templ PlaylistList(playlists []spotify.Playlist, page int) {
+templ PlaylistList(playlists []spotify.Playlist, page int, sessionId string) {
 	for _, p := range playlists {
 		<li>
 			<details class="playlistItem">
 				<summary>
 					{ p.Name }
 					<button
-						hx-put={ hxPutStartPlaylist(p) }
+						hx-put={ hxPutStartPlaylist(p, sessionId) }
 						hx-include="#deviceSelect"
 						hx-target="#playButton"
 						hx-swap="outerHTML"

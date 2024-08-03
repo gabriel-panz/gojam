@@ -31,7 +31,7 @@ func addRoutes(
 	mux.HandleFunc("GET /user/devices", m.Authorize(logger, h.ListDevices(logger, spotifyService)))
 
 	// SpotifyPlayer
-	mux.HandleFunc("GET /player", m.Authorize(logger, h.Player(logger, spotifyService)))
+	mux.HandleFunc("GET /player", m.Authorize(logger, h.Player(logger, spotifyService, sessionService)))
 	mux.HandleFunc("PUT /player/play", m.Authorize(logger, h.Play(logger, spotifyService, sessionService)))
 	mux.HandleFunc("PUT /player/pause", m.Authorize(logger, h.Pause(logger, spotifyService)))
 

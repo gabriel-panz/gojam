@@ -256,7 +256,7 @@ func (s Service) Play(token string, deviceId string, uri string, t types.ShowTyp
 		return err
 	}
 
-	if resp.StatusCode == 204 {
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		return nil
 	} else {
 		buf := new(bytes.Buffer)
@@ -278,7 +278,8 @@ func (s Service) Pause(token string, deviceId string) error {
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode == 204 {
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		return nil
 	} else {
 		return errors.ErrBadRequest

@@ -9,6 +9,10 @@ func getHxSession(id string) string {
 	return fmt.Sprintf("/ws/%s", id)
 }
 
+func getFirstPlaylistList(sessionId string) string {
+	return fmt.Sprintf("/user/playlists?size=20&session_id=%s", sessionId)
+}
+
 templ Session(ses *session.Session) {
 	@components.Base() {
 		<header>
@@ -31,7 +35,7 @@ templ Session(ses *session.Session) {
 				<h2>My Playlists:</h2> (click name to expand)
 				<ul
 					class="list"
-					hx-get="/user/playlists?size=20"
+					hx-get={ getFirstPlaylistList(ses.ID) }
 					hx-swap="innerHTML"
 					hx-trigger="load"
 				></ul>

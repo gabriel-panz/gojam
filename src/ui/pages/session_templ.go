@@ -19,6 +19,10 @@ func getHxSession(id string) string {
 	return fmt.Sprintf("/ws/%s", id)
 }
 
+func getFirstPlaylistList(sessionId string) string {
+	return fmt.Sprintf("/user/playlists?size=20&session_id=%s", sessionId)
+}
+
 func Session(ses *session.Session) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -57,7 +61,7 @@ func Session(ses *session.Session) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(getHxSession(ses.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/pages/session.templ`, Line: 26, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/pages/session.templ`, Line: 30, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -71,7 +75,20 @@ func Session(ses *session.Session) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</section><section id=\"playlists\"><h2>My Playlists:</h2>(click name to expand)<ul class=\"list\" hx-get=\"/user/playlists?size=20\" hx-swap=\"innerHTML\" hx-trigger=\"load\"></ul></section></section><script src=\"https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js\"></script> ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</section><section id=\"playlists\"><h2>My Playlists:</h2>(click name to expand)<ul class=\"list\" hx-get=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(getFirstPlaylistList(ses.ID))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/pages/session.templ`, Line: 38, Col: 42}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"innerHTML\" hx-trigger=\"load\"></ul></section></section><script src=\"https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js\"></script> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

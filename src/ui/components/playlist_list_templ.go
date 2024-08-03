@@ -20,11 +20,11 @@ func hxGetPlaylistPage(page int) string {
 	return fmt.Sprintf("/user/playlists?page=%d&size=20", page+1)
 }
 
-func hxPutStartPlaylist(p spotify.Playlist) string {
-	return fmt.Sprintf("/player/play?uri=%s&type=%s", p.URI, types.Playlist)
+func hxPutStartPlaylist(p spotify.Playlist, sessionId string) string {
+	return fmt.Sprintf("/player/play?uri=%s&type=%s&session_id=%s", p.URI, types.Playlist, sessionId)
 }
 
-func PlaylistList(playlists []spotify.Playlist, page int) templ.Component {
+func PlaylistList(playlists []spotify.Playlist, page int, sessionId string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -56,9 +56,9 @@ func PlaylistList(playlists []spotify.Playlist, page int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hxPutStartPlaylist(p))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hxPutStartPlaylist(p, sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/playlist_list.templ`, Line: 24, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/playlist_list.templ`, Line: 24, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {

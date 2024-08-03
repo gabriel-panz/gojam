@@ -10,19 +10,28 @@ import (
 type Session struct {
 	ID      string
 	DjToken string
-	Conns   map[string]*websocket.Conn
+	// map where the key is the [connection token]
+	Conns map[string]*SessionClient
+}
+
+type SessionClient struct {
+	DeviceId string
+	Conn     *websocket.Conn
 }
 
 func NewSession(id string, creatorToken string) *Session {
 	return &Session{
 		DjToken: creatorToken,
-		Conns:   make(map[string]*websocket.Conn),
+		Conns:   make(map[string]*SessionClient),
 		ID:      id,
 	}
 }
 
 func (s *Session) ConnectToSession(token string, conn *websocket.Conn) {
-	s.Conns[token] = conn
+	s.Conns[token] = &SessionClient{
+		DeviceId: "",
+		Conn:     conn,
+	}
 }
 
 type SessionMessage struct {
@@ -30,25 +39,6 @@ type SessionMessage struct {
 	Uri      string         `json:"uri,omitempty"`
 	Type     types.ShowType `json:"type,omitempty"`
 }
-
-// func (s *Session) readLoop(conn *websocket.Conn) {
-// 	for {
-// 		m := SessionMessage{}
-// 		err := conn.ReadJSON(m)
-// 		if err != nil {
-// 			if err == io.EOF {
-// 				delete(s.Conns, conn)
-// 				return
-// 			}
-// 			log.Println("read error:", err)
-// 			continue
-// 		}
-
-// 		for ws := range s.Conns {
-// 			go Broadcast(m, ws)
-// 		}
-// 	}
-// }
 
 func Broadcast(m SessionMessage, ws *websocket.Conn) {
 	log.Println(m)
